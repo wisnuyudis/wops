@@ -71,4 +71,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(WeeklyProgress::class);
     }
+
+    /**
+     * Get the SORs assigned to this user.
+     */
+    public function sors()
+    {
+        return $this->belongsToMany(Sor::class, 'sor_user');
+    }
 }

@@ -42,4 +42,12 @@ class Sor extends Model
     {
         return $this->hasMany(DailyActivity::class, 'sor_id');
     }
+
+    /**
+     * Get the users assigned to this SOR.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'sor_user');
+    }
 }

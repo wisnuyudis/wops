@@ -92,6 +92,22 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="user_ids" class="form-control-label">Assign Users <span class="text-danger">*</span></label>
+                        <select class="form-control @error('user_ids') is-invalid @enderror" id="user_ids" name="user_ids[]" multiple size="5" required>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" 
+                                    {{ (is_array(old('user_ids')) ? in_array($user->id, old('user_ids')) : $sor->users->contains($user->id)) ? 'selected' : '' }}>
+                                    {{ $user->name }} ({{ $user->job ? $user->job->name : 'No Job' }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('user_ids')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple users</small>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="description" class="form-control-label">Description</label>
                         <textarea class="form-control @error('description') is-invalid @enderror" 
                                   id="description" name="description" rows="5">{{ old('description', $sor->description) }}</textarea>

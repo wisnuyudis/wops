@@ -61,6 +61,20 @@
                             </p>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-sm font-weight-bold">Assigned Users</label>
+                            <p class="text-sm">
+                                @if($sor->users->count() > 0)
+                                    @foreach($sor->users as $user)
+                                        <span class="badge bg-gradient-info me-1">{{ $user->name }}</span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">No users assigned</span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="row">

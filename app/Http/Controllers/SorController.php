@@ -6,12 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\Sor;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\User;
 
 class SorController extends Controller
 {
     public function index()
     {
-        $sors = Sor::with(['customer', 'product'])->paginate(10);
+        $sors = Sor::with(['customer', 'product', 'users'])->paginate(10);
         return view('sors.index', compact('sors'));
     }
 
@@ -19,7 +20,8 @@ class SorController extends Controller
     {
         $customers = Customer::all();
         $products = Product::all();
-        return view('sors.create', compact('customers', 'products'));
+        $users = User::where('status', 'active')->get();
+        return view('sors.create', compact('customers', 'products', 'users'));
     }
 
     public function store(Request $request)
@@ -31,16 +33,23 @@ class SorController extends Controller
             'init_date' => 'required|date',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive',
+            'user_ids' => 'nullable|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
-        Sor::create($validated);
+        $sor = Sor::create($validated);
+        
+        // Attach assigned users
+        if ($request->has('user_ids')) {
+            $sor->users()->sync($request->user_ids);
+        }
 
         return redirect()->route('sors.index')->with('success', 'SOR created successfully.');
     }
 
     public function show(Sor $sor)
     {
-        $sor->load(['customer', 'product', 'dailyActivities']);
+        $sor->load(['customer', 'product', 'dailyActivities', 'users']);
         return view('sors.show', compact('sor'));
     }
 
@@ -48,7 +57,8 @@ class SorController extends Controller
     {
         $customers = Customer::all();
         $products = Product::all();
-        return view('sors.edit', compact('sor', 'customers', 'products'));
+        $users = User::where('status', 'active')->get();
+        return view('sors.edit', compact('sor', 'customers', 'products', 'users'));
     }
 
     public function update(Request $request, Sor $sor)
@@ -60,9 +70,18 @@ class SorController extends Controller
             'init_date' => 'required|date',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive',
+            'user_ids' => 'nullable|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
         $sor->update($validated);
+        
+        // Sync assigned users
+        if ($request->has('user_ids')) {
+            $sor->users()->sync($request->user_ids);
+        } else {
+            $sor->users()->sync([]);
+        }
 
         return redirect()->route('sors.index')->with('success', 'SOR updated successfully.');
     }

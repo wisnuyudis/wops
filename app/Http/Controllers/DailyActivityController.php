@@ -25,7 +25,13 @@ class DailyActivityController extends Controller
 
     public function create()
     {
-        $sors = Sor::where('status', 'active')->get();
+        // Get only SORs assigned to current user (or all if admin)
+        if (auth()->user()->role === 'admin') {
+            $sors = Sor::where('status', 'active')->get();
+        } else {
+            $sors = auth()->user()->sors()->where('status', 'active')->get();
+        }
+        
         $jobTypes = JobType::all();
         $jobItems = JobItem::all();
         return view('daily-activities.create', compact('sors', 'jobTypes', 'jobItems'));
@@ -67,7 +73,13 @@ class DailyActivityController extends Controller
             abort(403, 'Unauthorized action.');
         }
         
-        $sors = Sor::where('status', 'active')->get();
+        // Get only SORs assigned to current user (or all if admin)
+        if (auth()->user()->role === 'admin') {
+            $sors = Sor::where('status', 'active')->get();
+        } else {
+            $sors = auth()->user()->sors()->where('status', 'active')->get();
+        }
+        
         $jobTypes = JobType::all();
         $jobItems = JobItem::all();
         return view('daily-activities.edit', compact('dailyActivity', 'sors', 'jobTypes', 'jobItems'));
