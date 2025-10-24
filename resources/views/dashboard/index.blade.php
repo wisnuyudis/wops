@@ -104,8 +104,8 @@
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">SOR</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Customer</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Product</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
                         </tr>
                     </thead>
@@ -123,10 +123,10 @@
                                 <p class="text-xs font-weight-bold mb-0">{{ $activity->date->format('d M Y') }}</p>
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">{{ $activity->sor ? $activity->sor->sor : '-' }}</p>
+                                <p class="text-xs font-weight-bold mb-0">{{ $activity->cust_name ?? ($activity->sor ? $activity->sor->customer->name : '-') }}</p>
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">{{ Str::limit($activity->action, 50) }}</p>
+                                <p class="text-xs font-weight-bold mb-0">{{ $activity->product ?? '-' }}</p>
                             </td>
                             <td>
                                 <span class="badge badge-sm badge-{{ $activity->status == 'completed' ? 'success' : ($activity->status == 'in_progress' ? 'info' : 'warning') }}">

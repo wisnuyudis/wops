@@ -35,8 +35,8 @@ class WeeklyProgressController extends Controller
                                       ->first();
         
         if ($existingEntry) {
-            return redirect()->route('weekly-progress.edit', $existingEntry)
-                           ->with('info', 'You already have an entry for this week. You can edit it here.');
+            return redirect()->route('weekly-progress.index')
+                           ->with('info', 'You already have an entry for this week (Week ' . $currentWeek . '). Please edit it from the list.');
         }
         
         return view('weekly-progress.create', compact('currentYear', 'currentWeek'));

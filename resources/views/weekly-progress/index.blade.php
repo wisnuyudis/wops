@@ -21,6 +21,12 @@
                 </div>
                 @endif
                 
+                @if(session('info'))
+                <div class="alert alert-info mx-4 mt-3">
+                    {{ session('info') }}
+                </div>
+                @endif
+                
                 @if(session('error'))
                 <div class="alert alert-danger mx-4 mt-3">
                     {{ session('error') }}
@@ -32,7 +38,7 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Year</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Week</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Week Period</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Week Status</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
@@ -40,12 +46,19 @@
                         </thead>
                         <tbody>
                             @forelse($weeklyProgresses as $progress)
+                            @php
+                                $date = new DateTime();
+                                $date->setISODate($progress->year, $progress->week_number);
+                                $weekStart = $date->format('d M');
+                                $date->modify('+6 days');
+                                $weekEnd = $date->format('d M Y');
+                            @endphp
                             <tr>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0 ms-3">{{ $progress->year }}</p>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">Week {{ $progress->week_number }}</p>
+                                    <p class="text-xs font-weight-bold mb-0">Week {{ $progress->week_number }}<br><small class="text-muted">{{ $weekStart }} - {{ $weekEnd }}</small></p>
                                 </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">{{ $progress->user->name }}</p>
@@ -54,17 +67,17 @@
                                     <p class="text-xs mb-0">{{ Str::limit($progress->last_week_status, 50) }}</p>
                                 </td>
                                 <td class="align-middle text-center">
-                                    <a href="{{ route('weekly-progress.show', $progress) }}" class="btn btn-link text-secondary mb-0">
+                                    <a href="{{ route('weekly-progress.show', $progress) }}" class="btn btn-link text-secondary mb-0" title="View">
                                         <i class="fa fa-eye text-xs"></i>
                                     </a>
                                     @if(auth()->user()->role === 'admin' || $progress->user_id === auth()->id())
-                                    <a href="{{ route('weekly-progress.edit', $progress) }}" class="btn btn-link text-secondary mb-0">
+                                    <a href="{{ route('weekly-progress.edit', $progress) }}" class="btn btn-link text-secondary mb-0" title="Edit">
                                         <i class="fa fa-edit text-xs"></i>
                                     </a>
                                     <form action="{{ route('weekly-progress.destroy', $progress) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-link text-secondary mb-0" onclick="return confirm('Are you sure?')">
+                                        <button type="submit" class="btn btn-link text-secondary mb-0" onclick="return confirm('Are you sure?')" title="Delete">
                                             <i class="fa fa-trash text-xs"></i>
                                         </button>
                                     </form>
