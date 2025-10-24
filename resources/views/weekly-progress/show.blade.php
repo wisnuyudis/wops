@@ -62,7 +62,7 @@
                             <label class="form-label text-sm font-weight-bold">Last Week Status</label>
                             <div class="card bg-gray-100">
                                 <div class="card-body">
-                                    <p class="text-sm mb-0">{{ $weeklyProgress->last_week_status }}</p>
+                                    <p class="text-sm mb-0" style="white-space: pre-line;">{{ $weeklyProgress->last_week_status }}</p>
                                 </div>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                             <label class="form-label text-sm font-weight-bold text-primary">P1 - Must Complete This Week</label>
                             <div class="card bg-gradient-primary">
                                 <div class="card-body">
-                                    <p class="text-sm text-white mb-0">{{ $weeklyProgress->p1 }}</p>
+                                    <p class="text-sm text-white mb-0" style="white-space: pre-line;">{{ $weeklyProgress->p1 }}</p>
                                 </div>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                             <label class="form-label text-sm font-weight-bold text-info">P2 - Secondary Priority</label>
                             <div class="card bg-gradient-info">
                                 <div class="card-body">
-                                    <p class="text-sm text-white mb-0">{{ $weeklyProgress->p2 ?? 'No secondary priority set' }}</p>
+                                    <p class="text-sm text-white mb-0" style="white-space: pre-line;">{{ $weeklyProgress->p2 ?? 'No secondary priority set' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                             <label class="form-label text-sm font-weight-bold text-secondary">P3 - 2+ Weeks Ahead</label>
                             <div class="card bg-gradient-secondary">
                                 <div class="card-body">
-                                    <p class="text-sm text-white mb-0">{{ $weeklyProgress->p3 ?? 'No long-term plans set' }}</p>
+                                    <p class="text-sm text-white mb-0" style="white-space: pre-line;">{{ $weeklyProgress->p3 ?? 'No long-term plans set' }}</p>
                                 </div>
                             </div>
                         </div>
