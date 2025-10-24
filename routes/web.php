@@ -11,9 +11,9 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 
 // Auth routes
-Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/', [AuthController::class, 'showLogin']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
