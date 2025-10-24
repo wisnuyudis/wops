@@ -45,7 +45,15 @@
                                 @error('week_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="form-text text-muted">Current week: {{ date('W') }}</small>
+                                @php
+                                    $currentDate = new DateTime();
+                                    $currentDate->setISODate(date('Y'), date('W'));
+                                    $currentDate->modify('Monday this week');
+                                    $weekStart = $currentDate->format('d M');
+                                    $currentDate->modify('+4 days');
+                                    $weekEnd = $currentDate->format('d M Y');
+                                @endphp
+                                <small class="form-text text-muted">Current week: {{ date('W') }} ({{ $weekStart }} - {{ $weekEnd }})</small>
                             </div>
                         </div>
                     </div>

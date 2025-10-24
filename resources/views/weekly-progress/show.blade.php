@@ -22,6 +22,17 @@
                 </div>
             </div>
             <div class="card-body">
+                @php
+                    $date = new DateTime();
+                    $date->setISODate($weeklyProgress->year, $weeklyProgress->week_number);
+                    // Set to Monday
+                    $date->modify('Monday this week');
+                    $weekStart = $date->format('d M Y');
+                    // Add 4 days to get Friday
+                    $date->modify('+4 days');
+                    $weekEnd = $date->format('d M Y');
+                @endphp
+                
                 <div class="row">
                     <div class="col-md-4">
                         <div class="mb-3">
@@ -38,7 +49,7 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label text-sm font-weight-bold">Week Number</label>
-                            <p class="text-sm">Week {{ $weeklyProgress->week_number }}</p>
+                            <p class="text-sm">Week {{ $weeklyProgress->week_number }}<br><small class="text-muted">{{ $weekStart }} - {{ $weekEnd }}</small></p>
                         </div>
                     </div>
                 </div>

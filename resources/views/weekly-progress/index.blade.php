@@ -49,8 +49,11 @@
                             @php
                                 $date = new DateTime();
                                 $date->setISODate($progress->year, $progress->week_number);
+                                // Set to Monday
+                                $date->modify('Monday this week');
                                 $weekStart = $date->format('d M');
-                                $date->modify('+6 days');
+                                // Add 4 days to get Friday
+                                $date->modify('+4 days');
                                 $weekEnd = $date->format('d M Y');
                             @endphp
                             <tr>

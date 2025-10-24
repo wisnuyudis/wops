@@ -11,7 +11,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
+                        <i class="fas fa-home text-primary text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
@@ -20,7 +20,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('daily-activities.*') ? 'active' : '' }}" href="{{ route('daily-activities.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
+                        <i class="fas fa-calendar-day text-warning text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Daily Activity</span>
                 </a>
@@ -29,7 +29,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('weekly-progress.*') ? 'active' : '' }}" href="{{ route('weekly-progress.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-collection text-info text-sm opacity-10"></i>
+                        <i class="fas fa-chart-line text-info text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Weekly Progress</span>
                 </a>
@@ -42,7 +42,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('sors.*') ? 'active' : '' }}" href="{{ route('sors.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-single-copy-04 text-success text-sm opacity-10"></i>
+                        <i class="fas fa-file-alt text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">SOR Management</span>
                 </a>
@@ -52,7 +52,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
+                        <i class="fas fa-users text-dark text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">User Management</span>
                 </a>
@@ -61,7 +61,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-building text-info text-sm opacity-10"></i>
+                        <i class="fas fa-building text-info text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Customers</span>
                 </a>
@@ -70,7 +70,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-box-2 text-warning text-sm opacity-10"></i>
+                        <i class="fas fa-box text-warning text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Products</span>
                 </a>
