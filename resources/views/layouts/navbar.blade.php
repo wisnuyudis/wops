@@ -12,11 +12,41 @@
                 <!-- Search bar can be added here if needed -->
             </div>
             <ul class="navbar-nav  justify-content-end">
-                <li class="nav-item d-flex align-items-center">
-                    <a href="javascript:;" class="nav-link text-white font-weight-bold px-0">
-                        <i class="fa fa-user me-sm-1"></i>
+                <li class="nav-item dropdown pe-2 d-flex align-items-center">
+                    <a href="#" class="nav-link text-white p-0 dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-user me-1"></i>
                         <span class="d-sm-inline d-none">{{ auth()->user()->name }}</span>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end px-2 py-3" aria-labelledby="dropdownMenuButton">
+                        <li>
+                            <a class="dropdown-item border-radius-md" href="{{ route('users.edit', auth()->id()) }}">
+                                <div class="d-flex py-1">
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <h6 class="text-sm font-weight-normal mb-1">
+                                            <span class="font-weight-bold">Edit Profile</span>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item border-radius-md">
+                                    <div class="d-flex py-1">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="text-sm font-weight-normal mb-1">
+                                                <span class="font-weight-bold">Logout</span>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-white p-0" id="iconNavbarSidenav">
@@ -26,19 +56,6 @@
                             <i class="sidenav-toggler-line bg-white"></i>
                         </div>
                     </a>
-                </li>
-                <li class="nav-item px-3 d-flex align-items-center">
-                    <a href="javascript:;" class="nav-link text-white p-0">
-                        <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                    </a>
-                </li>
-                <li class="nav-item dropdown pe-2 d-flex align-items-center">
-                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-link nav-link text-white p-0">
-                            <i class="fa fa-sign-out cursor-pointer"></i>
-                        </button>
-                    </form>
                 </li>
             </ul>
         </div>

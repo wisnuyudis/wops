@@ -17,10 +17,10 @@ class WeeklyProgressController extends Controller
             $query->where('user_id', auth()->id());
         }
         
-        $weeklyProgress = $query->orderBy('year', 'desc')
+        $weeklyProgresses = $query->orderBy('year', 'desc')
                                 ->orderBy('week_number', 'desc')
                                 ->paginate(10);
-        return view('weekly-progress.index', compact('weeklyProgress'));
+        return view('weekly-progress.index', compact('weeklyProgresses'));
     }
 
     public function create()

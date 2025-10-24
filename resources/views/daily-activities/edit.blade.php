@@ -37,7 +37,10 @@
                                 <select class="form-control @error('sor_id') is-invalid @enderror" id="sor_id" name="sor_id">
                                     <option value="">Select SOR (Optional)</option>
                                     @foreach($sors as $sor)
-                                        <option value="{{ $sor->id }}" {{ old('sor_id', $dailyActivity->sor_id) == $sor->id ? 'selected' : '' }}>
+                                        <option value="{{ $sor->id }}" 
+                                                data-customer="{{ $sor->customer->name }}"
+                                                data-product="{{ $sor->product->name }}"
+                                                {{ old('sor_id', $dailyActivity->sor_id) == $sor->id ? 'selected' : '' }}>
                                             {{ $sor->sor }} - {{ $sor->customer->name }}
                                         </option>
                                     @endforeach
@@ -65,10 +68,11 @@
                             <div class="form-group">
                                 <label for="product" class="form-control-label">Product</label>
                                 <input type="text" class="form-control @error('product') is-invalid @enderror" 
-                                       id="product" name="product" value="{{ old('product', $dailyActivity->product) }}">
+                                       id="product" name="product" value="{{ old('product', $dailyActivity->product) }}" readonly>
                                 @error('product')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <small class="text-muted">Auto-filled from SOR</small>
                             </div>
                         </div>
                     </div>
@@ -139,9 +143,17 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="action" class="form-control-label">Action</label>
-                        <textarea class="form-control @error('action') is-invalid @enderror" 
-                                  id="action" name="action" rows="3">{{ old('action', $dailyActivity->action) }}</textarea>
+                        <label for="action" class="form-control-label">Action <span class="text-danger">*</span></label>
+                        <select class="form-control @error('action') is-invalid @enderror" id="action" name="action" required>
+                            <option value="">Select Action</option>
+                            <option value="Cust Call" {{ old('action', $dailyActivity->action) == 'Cust Call' ? 'selected' : '' }}>Cust Call</option>
+                            <option value="Online Meet" {{ old('action', $dailyActivity->action) == 'Online Meet' ? 'selected' : '' }}>Online Meet</option>
+                            <option value="Remote" {{ old('action', $dailyActivity->action) == 'Remote' ? 'selected' : '' }}>Remote</option>
+                            <option value="Visit" {{ old('action', $dailyActivity->action) == 'Visit' ? 'selected' : '' }}>Visit</option>
+                            <option value="sdt Internal" {{ old('action', $dailyActivity->action) == 'sdt Internal' ? 'selected' : '' }}>sdt Internal</option>
+                            <option value="Event" {{ old('action', $dailyActivity->action) == 'Event' ? 'selected' : '' }}>Event</option>
+                            <option value="Training" {{ old('action', $dailyActivity->action) == 'Training' ? 'selected' : '' }}>Training</option>
+                        </select>
                         @error('action')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -175,3 +187,30 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sorSelect = document.getElementById('sor_id');
+    const custNameInput = document.getElementById('cust_name');
+    const productInput = document.getElementById('product');
+    
+    sorSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        
+        if (this.value) {
+            // Auto-fill customer and product from SOR
+            const customer = selectedOption.getAttribute('data-customer');
+            const product = selectedOption.getAttribute('data-product');
+            
+            custNameInput.value = customer;
+            productInput.value = product;
+        } else {
+            // Clear fields if no SOR selected
+            custNameInput.value = '';
+            productInput.value = '';
+        }
+    });
+});
+</script>
+@endpush
