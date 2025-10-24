@@ -10,9 +10,11 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <h6>SOR Details</h6>
                     <div>
+                        @if(auth()->user()->role === 'admin')
                         <a href="{{ route('sors.edit', $sor) }}" class="btn btn-info btn-sm me-2">
                             <i class="fas fa-edit"></i> Edit
                         </a>
+                        @endif
                         <a href="{{ route('sors.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left"></i> Back
                         </a>

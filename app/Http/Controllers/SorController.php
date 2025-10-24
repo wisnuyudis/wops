@@ -12,7 +12,16 @@ class SorController extends Controller
 {
     public function index()
     {
-        $sors = Sor::with(['customer', 'product', 'users'])->paginate(10);
+        $query = Sor::with(['customer', 'product', 'users']);
+        
+        // If user is not admin, only show SORs assigned to them
+        if (auth()->user()->role !== 'admin') {
+            $query->whereHas('users', function($q) {
+                $q->where('users.id', auth()->id());
+            });
+        }
+        
+        $sors = $query->paginate(10);
         return view('sors.index', compact('sors'));
     }
 
@@ -49,12 +58,22 @@ class SorController extends Controller
 
     public function show(Sor $sor)
     {
+        // Check if user has access to this SOR
+        if (auth()->user()->role !== 'admin' && !$sor->users->contains(auth()->id())) {
+            abort(403, 'You do not have access to this SOR.');
+        }
+        
         $sor->load(['customer', 'product', 'dailyActivities', 'users']);
         return view('sors.show', compact('sor'));
     }
 
     public function edit(Sor $sor)
     {
+        // Only admin can edit SORs
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Only admin can edit SORs.');
+        }
+        
         $customers = Customer::all();
         $products = Product::all();
         $users = User::where('status', 'active')->get();
@@ -88,6 +107,11 @@ class SorController extends Controller
 
     public function destroy(Sor $sor)
     {
+        // Only admin can delete SORs
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Only admin can delete SORs.');
+        }
+        
         $sor->delete();
         return redirect()->route('sors.index')->with('success', 'SOR deleted successfully.');
     }

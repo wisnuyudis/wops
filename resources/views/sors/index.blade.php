@@ -9,9 +9,11 @@
             <div class="card-header pb-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h6>SOR (Statement Of Requirements) List</h6>
+                    @if(auth()->user()->role === 'admin')
                     <a href="{{ route('sors.create') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Add New SOR
                     </a>
+                    @endif
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
@@ -63,10 +65,10 @@
                                     <a href="{{ route('sors.show', $sor) }}" class="text-info font-weight-bold text-xs me-2">
                                         View
                                     </a>
+                                    @if(auth()->user()->role === 'admin')
                                     <a href="{{ route('sors.edit', $sor) }}" class="text-secondary font-weight-bold text-xs me-2">
                                         Edit
                                     </a>
-                                    @if(auth()->user()->role === 'admin')
                                     <form action="{{ route('sors.destroy', $sor) }}" method="POST" class="d-inline" 
                                           onsubmit="return confirm('Are you sure you want to delete this SOR?');">
                                         @csrf
