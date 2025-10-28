@@ -275,7 +275,7 @@
                     data.sors.forEach(sor => {
                         const option = document.createElement('option');
                         option.value = sor.id;
-                        option.textContent = `${sor.sor} - ${sor.customer ? sor.customer.cust_name : 'N/A'}`;
+                        option.textContent = `${sor.sor} - ${sor.customer ? sor.customer.name : 'N/A'}`;
                         sorSelect.appendChild(option);
                     });
                 } else {
