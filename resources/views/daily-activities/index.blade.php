@@ -14,32 +14,6 @@
                     </a>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-3">
-                        <form method="GET" action="{{ route('daily-activities.index') }}" id="monthForm">
-                            <label class="form-label text-xs mb-1">Period</label>
-                            <input type="month" name="month" class="form-control form-control-sm" 
-                                   value="{{ $selectedMonth }}" onchange="this.form.submit()">
-                            @if(request('search'))
-                                <input type="hidden" name="search" value="{{ request('search') }}">
-                            @endif
-                            @if(auth()->user()->role === 'admin' && request('user_id'))
-                                <input type="hidden" name="user_id" value="{{ request('user_id') }}">
-                            @endif
-                        </form>
-                    </div>
-                    <div class="col-md-3">
-                        <form method="GET" action="{{ route('daily-activities.index') }}" id="searchForm">
-                            <label class="form-label text-xs mb-1">Search</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search activities..." value="{{ request('search') }}">
-                                <input type="hidden" name="month" value="{{ $selectedMonth }}">
-                                @if(auth()->user()->role === 'admin' && request('user_id'))
-                                    <input type="hidden" name="user_id" value="{{ request('user_id') }}">
-                                @endif
-                            </div>
-                        </form>
-                    </div>
                     @if(auth()->user()->role === 'admin')
                     <div class="col-md-3">
                         <form method="GET" action="{{ route('daily-activities.index') }}" id="filterForm">
@@ -62,6 +36,32 @@
                         </form>
                     </div>
                     @endif
+                    <div class="col-md-3">
+                        <form method="GET" action="{{ route('daily-activities.index') }}" id="monthForm">
+                            <label class="form-label text-xs mb-1">Period</label>
+                            <input type="month" name="month" class="form-control form-control-sm" 
+                                   value="{{ $selectedMonth }}" onchange="this.form.submit()">
+                            @if(request('search'))
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
+                            @if(auth()->user()->role === 'admin' && request('user_id'))
+                                <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                            @endif
+                        </form>
+                    </div>
+                    <div class="col-md-3 ms-auto">
+                        <form method="GET" action="{{ route('daily-activities.index') }}" id="searchForm">
+                            <label class="form-label text-xs mb-1">Search</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search activities..." value="{{ request('search') }}">
+                                <input type="hidden" name="month" value="{{ $selectedMonth }}">
+                                @if(auth()->user()->role === 'admin' && request('user_id'))
+                                    <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                                @endif
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
