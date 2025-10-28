@@ -56,25 +56,14 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
         
-        // Get Daily Activity by Job Items (for Line Chart - by day)
+        // Get Daily Activity by Job Items (for Pie Chart)
         $activityByJobItems = (clone $query)
             ->join('job_items', 'daily_activities.job_item_id', '=', 'job_items.id')
-            ->select('job_items.name', DB::raw('DAY(date) as day'), DB::raw('count(*) as total'))
-            ->groupBy('job_items.name', DB::raw('DAY(date)'))
-            ->orderBy(DB::raw('DAY(date)'))
+            ->select('job_items.name', DB::raw('count(*) as total'))
+            ->groupBy('job_items.name')
+            ->orderBy('total', 'desc')
+            ->limit(10)
             ->get();
-        
-        // Transform job items data for Chart.js
-        $jobItemsData = [];
-        $days = range(1, $date->daysInMonth);
-        
-        foreach ($activityByJobItems->groupBy('name') as $jobItemName => $items) {
-            $dailyData = array_fill(0, count($days), 0);
-            foreach ($items as $item) {
-                $dailyData[$item->day - 1] = $item->total;
-            }
-            $jobItemsData[$jobItemName] = $dailyData;
-        }
         
         return view('dashboard.index', compact(
             'selectedMonth',
@@ -82,8 +71,7 @@ class DashboardController extends Controller
             'selectedUserId',
             'activityByCustomers',
             'activityByProducts',
-            'jobItemsData',
-            'days'
+            'activityByJobItems'
         ));
     }
 }

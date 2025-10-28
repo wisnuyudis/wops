@@ -68,7 +68,7 @@
         <div class="card h-100">
             <div class="card-header pb-0">
                 <h6>Daily Activity by Job Items</h6>
-                <p class="text-sm mb-0">Activity trend throughout the month</p>
+                <p class="text-sm mb-0">Distribution of activities per job item</p>
             </div>
             <div class="card-body">
                 <canvas id="jobItemChart" height="300"></canvas>
@@ -80,7 +80,11 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
+// Register datalabels plugin
+Chart.register(ChartDataLabels);
+
 // Pie Chart - Customers
 const customerData = {
     labels: {!! json_encode($activityByCustomers->pluck('cust_name')) !!},
@@ -106,6 +110,14 @@ const customerChart = new Chart(document.getElementById('customerChart'), {
                     boxWidth: 12,
                     font: { size: 10 }
                 }
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 12
+                },
+                formatter: (value) => value
             }
         }
     }
@@ -134,39 +146,39 @@ const productChart = new Chart(document.getElementById('productChart'), {
             }
         },
         plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#444',
+                font: {
+                    weight: 'bold',
+                    size: 11
+                },
+                formatter: (value) => value
+            }
         }
     }
 });
 
-// Line Chart - Job Items
-const jobItemsData = {!! json_encode($jobItemsData) !!};
-const days = {!! json_encode($days) !!};
-
-const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
-const datasets = Object.keys(jobItemsData).map((jobItem, index) => ({
-    label: jobItem,
-    data: jobItemsData[jobItem],
-    borderColor: colors[index % colors.length],
-    backgroundColor: colors[index % colors.length] + '20',
-    tension: 0.3
-}));
+// Pie Chart - Job Items
+const jobItemData = {
+    labels: {!! json_encode($activityByJobItems->pluck('name')) !!},
+    datasets: [{
+        data: {!! json_encode($activityByJobItems->pluck('total')) !!},
+        backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#E7E9ED', '#C9CBCF', '#4BC0C0', '#FF6384'
+        ]
+    }]
+};
 
 const jobItemChart = new Chart(document.getElementById('jobItemChart'), {
-    type: 'line',
-    data: {
-        labels: days,
-        datasets: datasets
-    },
+    type: 'pie',
+    data: jobItemData,
     options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: { stepSize: 1 }
-            }
-        },
         plugins: {
             legend: {
                 position: 'bottom',
@@ -174,6 +186,14 @@ const jobItemChart = new Chart(document.getElementById('jobItemChart'), {
                     boxWidth: 12,
                     font: { size: 10 }
                 }
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 12
+                },
+                formatter: (value) => value
             }
         }
     }
