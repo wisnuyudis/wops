@@ -70,6 +70,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{dailyActivity}/edit', [DailyActivityController::class, 'edit'])->name('daily-activities.edit');
         Route::put('/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activities.update');
         Route::delete('/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activities.destroy');
+        
+        // Export (Admin only)
+        Route::post('/export', [DailyActivityController::class, 'export'])->name('daily-activities.export')->middleware('admin');
     });
     
     // Weekly Progress

@@ -9,9 +9,16 @@
             <div class="card-header pb-0">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6>Daily Activities List</h6>
-                    <a href="{{ route('daily-activities.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus"></i> Add New Activity
-                    </a>
+                    <div>
+                        @if(auth()->user()->role === 'admin')
+                        <button type="button" class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#exportModal">
+                            <i class="fas fa-file-excel"></i> Export to Excel
+                        </button>
+                        @endif
+                        <a href="{{ route('daily-activities.create') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add New Activity
+                        </a>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     @if(auth()->user()->role === 'admin')
@@ -158,6 +165,64 @@
         </div>
     </div>
 </div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Daily Activities to Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('daily-activities.export') }}" id="exportForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="export_user_id" class="form-control-label">Select User <span class="text-danger">*</span></label>
+                        <select class="form-control" id="export_user_id" name="user_id" required>
+                            <option value="">Select User</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="export_sor_id" class="form-control-label">Select SOR (Optional)</label>
+                        <select class="form-control" id="export_sor_id" name="sor_id">
+                            <option value="">All SORs</option>
+                            @foreach($sors as $sor)
+                                <option value="{{ $sor->id }}">{{ $sor->sor_code }} - {{ $sor->cust_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="date_from" class="form-control-label">Date From <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date_from" name="date_from" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="date_to" class="form-control-label">Date To <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date_to" name="date_to" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -168,6 +233,22 @@
         searchTimeout = setTimeout(function() {
             document.getElementById('searchForm').submit();
         }, 500);
+    });
+    
+    // Set default date range when export modal is opened
+    document.getElementById('exportModal').addEventListener('show.bs.modal', function (event) {
+        const dateFromInput = document.getElementById('date_from');
+        const dateToInput = document.getElementById('date_to');
+        
+        // Set default to first and last day of current month if not already set
+        if (!dateFromInput.value) {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            
+            dateFromInput.value = firstDay.toISOString().split('T')[0];
+            dateToInput.value = lastDay.toISOString().split('T')[0];
+        }
     });
 </script>
 @endpush

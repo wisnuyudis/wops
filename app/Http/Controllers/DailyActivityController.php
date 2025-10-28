@@ -58,7 +58,11 @@ class DailyActivityController extends Controller
                            ->orderBy('id', 'desc')
                            ->paginate(10)
                            ->appends($request->query());
-        return view('daily-activities.index', compact('activities', 'users', 'selectedMonth'));
+        
+        // Get SORs for export modal (admin only)
+        $sors = auth()->user()->role === 'admin' ? Sor::orderBy('sor_code')->get() : collect();
+        
+        return view('daily-activities.index', compact('activities', 'users', 'selectedMonth', 'sors'));
     }
 
     public function create()
@@ -164,5 +168,36 @@ class DailyActivityController extends Controller
         
         $dailyActivity->delete();
         return redirect()->route('daily-activities.index')->with('success', 'Daily Activity deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'sor_id' => 'nullable|exists:sors,id',
+            'date_from' => 'required|date',
+            'date_to' => 'required|date|after_or_equal:date_from',
+        ]);
+
+        // Get user name for filename
+        $user = User::findOrFail($validated['user_id']);
+        $userName = str_replace(' ', '_', $user->name);
+        
+        // Format dates for filename
+        $dateFrom = Carbon::parse($validated['date_from'])->format('Ymd');
+        $dateTo = Carbon::parse($validated['date_to'])->format('Ymd');
+        
+        // Generate filename
+        $filename = "DailyActivity_{$userName}_{$dateFrom}-{$dateTo}.xlsx";
+        
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\DailyActivityExport(
+                $validated['user_id'],
+                $validated['sor_id'] ?? null,
+                $validated['date_from'],
+                $validated['date_to']
+            ),
+            $filename
+        );
     }
 }
