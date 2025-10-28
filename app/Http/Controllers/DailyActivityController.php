@@ -9,6 +9,7 @@ use App\Models\JobType;
 use App\Models\JobItem;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\User;
 
 class DailyActivityController extends Controller
 {
@@ -16,8 +17,17 @@ class DailyActivityController extends Controller
     {
         $query = DailyActivity::with(['user', 'sor', 'jobType', 'jobItem']);
         
-        // If user is not admin, only show their own activities
-        if (auth()->user()->role !== 'admin') {
+        // Get users list for admin filter
+        $users = null;
+        if (auth()->user()->role === 'admin') {
+            $users = User::orderBy('name')->get();
+            
+            // Filter by user if selected
+            if ($request->has('user_id') && $request->user_id != '') {
+                $query->where('user_id', $request->user_id);
+            }
+        } else {
+            // If user is not admin, only show their own activities
             $query->where('user_id', auth()->id());
         }
         
@@ -39,7 +49,7 @@ class DailyActivityController extends Controller
                            ->orderBy('id', 'desc')
                            ->paginate(10)
                            ->appends($request->query());
-        return view('daily-activities.index', compact('activities'));
+        return view('daily-activities.index', compact('activities', 'users'));
     }
 
     public function create()

@@ -19,9 +19,32 @@
                             <div class="input-group input-group-sm" style="max-width: 300px;">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search activities..." value="{{ request('search') }}">
+                                @if(auth()->user()->role === 'admin' && request('user_id'))
+                                    <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                                @endif
                             </div>
                         </form>
                     </div>
+                    @if(auth()->user()->role === 'admin')
+                    <div class="col-md-6">
+                        <form method="GET" action="{{ route('daily-activities.index') }}" id="filterForm">
+                            <div class="input-group input-group-sm" style="max-width: 300px; margin-left: auto;">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <select name="user_id" class="form-control" id="userFilter" onchange="this.form.submit()">
+                                    <option value="">All Users</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if(request('search'))
+                                    <input type="hidden" name="search" value="{{ request('search') }}">
+                                @endif
+                            </div>
+                        </form>
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
@@ -36,11 +59,15 @@
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr>
+                                @if(auth()->user()->role === 'admin')
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
+                                @endif
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">SOR</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Customer</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Product</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Job Items</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 <th class="text-secondary opacity-7"></th>
                             </tr>
@@ -48,6 +75,7 @@
                         <tbody>
                             @forelse($activities as $activity)
                             <tr>
+                                @if(auth()->user()->role === 'admin')
                                 <td>
                                     <div class="d-flex px-2 py-1">
                                         <div class="d-flex flex-column justify-content-center">
@@ -55,6 +83,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                @endif
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">{{ $activity->date->format('d M Y') }}</p>
                                 </td>
@@ -65,7 +94,13 @@
                                     <p class="text-xs font-weight-bold mb-0">{{ $activity->cust_name ?? ($activity->sor ? $activity->sor->customer->name : '-') }}</p>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">{{ Str::limit($activity->action, 40) }}</p>
+                                    <p class="text-xs font-weight-bold mb-0">{{ $activity->product ?? ($activity->sor ? $activity->sor->product->name : '-') }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">{{ Str::limit($activity->action, 30) }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">{{ $activity->jobItem ? $activity->jobItem->name : '-' }}</p>
                                 </td>
                                 <td class="align-middle text-center text-sm">
                                     <span class="badge badge-sm bg-gradient-{{ $activity->status == 'completed' ? 'success' : ($activity->status == 'in_progress' ? 'info' : ($activity->status == 'on_hold' ? 'warning' : 'secondary')) }}">
@@ -93,7 +128,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">No daily activities found</td>
+                                <td colspan="{{ auth()->user()->role === 'admin' ? '9' : '8' }}" class="text-center">No daily activities found</td>
                             </tr>
                             @endforelse
                         </tbody>
