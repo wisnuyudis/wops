@@ -60,8 +60,8 @@ class DashboardController extends Controller
         $activityByJobItems = (clone $query)
             ->join('job_items', 'daily_activities.job_item_id', '=', 'job_items.id')
             ->select('job_items.name', DB::raw('DAY(date) as day'), DB::raw('count(*) as total'))
-            ->groupBy('job_items.name', 'day')
-            ->orderBy('day')
+            ->groupBy('job_items.name', DB::raw('DAY(date)'))
+            ->orderBy(DB::raw('DAY(date)'))
             ->get();
         
         // Transform job items data for Chart.js
