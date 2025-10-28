@@ -74,8 +74,10 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
                 ]);
             }
             
-            // Add empty row as separator between weeks (except for last week)
+            // Add 3 empty rows as separator between weeks (except for last week)
             if ($week < $this->weekTo) {
+                $data->push(['', '', '', '', '']);
+                $data->push(['', '', '', '', '']);
                 $data->push(['', '', '', '', '']);
             }
         }
@@ -123,7 +125,31 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
     {
         $highestRow = $sheet->getHighestRow();
         
-        // Loop through all rows to apply conditional styling
+        $weekStartRows = [];
+        $weekEndRows = [];
+        
+        // First pass: identify week sections
+        for ($row = 1; $row <= $highestRow; $row++) {
+            $cellValue = $sheet->getCell("A{$row}")->getValue();
+            
+            // Check if it's a week header
+            if (is_string($cellValue) && strpos($cellValue, 'Week ') === 0) {
+                $weekStartRows[] = $row;
+            }
+        }
+        
+        // Calculate week end rows (row before empty separator or last row)
+        foreach ($weekStartRows as $index => $startRow) {
+            if (isset($weekStartRows[$index + 1])) {
+                // Week ends 3 rows before next week (3 empty separator rows)
+                $weekEndRows[] = $weekStartRows[$index + 1] - 4;
+            } else {
+                // Last week ends at the last row
+                $weekEndRows[] = $highestRow;
+            }
+        }
+        
+        // Second pass: apply styling
         for ($row = 1; $row <= $highestRow; $row++) {
             $cellValue = $sheet->getCell("A{$row}")->getValue();
             
@@ -146,6 +172,12 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => Border::BORDER_MEDIUM,
+                            'color' => ['rgb' => '1976D2'],
+                        ],
                     ],
                 ]);
                 $sheet->getRowDimension($row)->setRowHeight(25);
@@ -186,7 +218,7 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => 'CCCCCC'],
+                            'color' => ['rgb' => '999999'],
                         ],
                     ],
                 ]);
@@ -209,6 +241,21 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
                     $sheet->getRowDimension($row)->setRowHeight($maxLines * 15 + 5);
                 }
             }
+        }
+        
+        // Third pass: Add outline borders for each week section
+        foreach ($weekStartRows as $index => $startRow) {
+            $endRow = $weekEndRows[$index];
+            
+            // Apply thick border around entire week section
+            $sheet->getStyle("A{$startRow}:E{$endRow}")->applyFromArray([
+                'borders' => [
+                    'outline' => [
+                        'borderStyle' => Border::BORDER_MEDIUM,
+                        'color' => ['rgb' => '1976D2'], // Dark blue
+                    ],
+                ],
+            ]);
         }
         
         return [];
