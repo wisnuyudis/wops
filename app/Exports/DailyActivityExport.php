@@ -68,7 +68,7 @@ class DailyActivityExport implements FromQuery, WithHeadings, WithMapping, WithC
         return [
             $this->rowNumber,
             \Carbon\Carbon::parse($activity->date)->format('d/m/Y'),
-            $activity->sor ? $activity->sor->sor_code : '-',
+            $activity->sor ? $activity->sor->sor : '-',
             $activity->action ?? '-',
             $activity->cust_name ?? '-',
             $activity->pic ?? '-',

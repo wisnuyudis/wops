@@ -192,7 +192,7 @@
                         <select class="form-control" id="export_sor_id" name="sor_id">
                             <option value="">All SORs</option>
                             @foreach($sors as $sor)
-                                <option value="{{ $sor->id }}">{{ $sor->sor_code }} - {{ $sor->cust_name }}</option>
+                                <option value="{{ $sor->id }}">{{ $sor->sor }} - {{ $sor->customer->cust_name ?? 'N/A' }}</option>
                             @endforeach
                         </select>
                     </div>
