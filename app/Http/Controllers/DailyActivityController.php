@@ -35,7 +35,10 @@ class DailyActivityController extends Controller
             });
         }
         
-        $activities = $query->orderBy('date', 'desc')->paginate(10)->appends($request->query());
+        $activities = $query->orderBy('date', 'desc')
+                           ->orderBy('id', 'desc')
+                           ->paginate(10)
+                           ->appends($request->query());
         return view('daily-activities.index', compact('activities'));
     }
 

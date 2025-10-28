@@ -24,6 +24,7 @@ class DashboardController extends Controller
             // Get recent activities - all
             $recentActivities = DailyActivity::with(['user', 'sor'])
                 ->orderBy('date', 'desc')
+                ->orderBy('id', 'desc')
                 ->limit(5)
                 ->get();
         } else {
@@ -37,6 +38,7 @@ class DashboardController extends Controller
             $recentActivities = DailyActivity::with(['user', 'sor'])
                 ->where('user_id', $user->id)
                 ->orderBy('date', 'desc')
+                ->orderBy('id', 'desc')
                 ->limit(5)
                 ->get();
         }
