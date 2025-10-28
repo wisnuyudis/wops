@@ -103,16 +103,39 @@
                         
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="status" class="form-control-label">Status <span class="text-danger">*</span></label>
-                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
-                                    <option value="">Select Status</option>
-                                    <option value="pending" {{ old('status', $dailyActivity->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="in_progress" {{ old('status', $dailyActivity->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                    <option value="completed" {{ old('status', $dailyActivity->status) == 'completed' ? 'selected' : '' }}>Completed</option>
-                                    <option value="on_hold" {{ old('status', $dailyActivity->status) == 'on_hold' ? 'selected' : '' }}>On Hold</option>
-                                </select>
+                                <label class="form-control-label d-block">Status <span class="text-danger">*</span></label>
+                                <div class="d-flex gap-3">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="status_pending" 
+                                               value="pending" {{ old('status', $dailyActivity->status) == 'pending' ? 'checked' : '' }} required>
+                                        <label class="form-check-label" for="status_pending">
+                                            Pending
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="status_in_progress" 
+                                               value="in_progress" {{ old('status', $dailyActivity->status) == 'in_progress' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="status_in_progress">
+                                            In Progress
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="status_completed" 
+                                               value="completed" {{ old('status', $dailyActivity->status) == 'completed' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="status_completed">
+                                            Completed
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="status_on_hold" 
+                                               value="on_hold" {{ old('status', $dailyActivity->status) == 'on_hold' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="status_on_hold">
+                                            On Hold
+                                        </label>
+                                    </div>
+                                </div>
                                 @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -122,7 +145,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="job_type_id" class="form-control-label">Job Type</label>
-                                <select class="form-control @error('job_type_id') is-invalid @enderror" id="job_type_id" name="job_type_id">
+                                <select class="form-control select2 @error('job_type_id') is-invalid @enderror" id="job_type_id" name="job_type_id">
                                     <option value="">Select Job Type</option>
                                     @foreach($jobTypes as $jobType)
                                         <option value="{{ $jobType->id }}" {{ old('job_type_id', $dailyActivity->job_type_id) == $jobType->id ? 'selected' : '' }}>
@@ -139,7 +162,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="job_item_id" class="form-control-label">Job Item</label>
-                                <select class="form-control @error('job_item_id') is-invalid @enderror" id="job_item_id" name="job_item_id">
+                                <select class="form-control select2 @error('job_item_id') is-invalid @enderror" id="job_item_id" name="job_item_id">
                                     <option value="">Select Job Item</option>
                                     @foreach($jobItems as $jobItem)
                                         <option value="{{ $jobItem->id }}" {{ old('job_item_id', $dailyActivity->job_item_id) == $jobItem->id ? 'selected' : '' }}>
@@ -200,9 +223,40 @@
 </div>
 @endsection
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 42px;
+        padding: 6px 12px;
+        border: 1px solid #d2d6da;
+        border-radius: 0.5rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 28px;
+        color: #495057;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px;
+    }
+    .select2-dropdown {
+        border: 1px solid #d2d6da;
+        border-radius: 0.5rem;
+    }
+</style>
+@endpush
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2 for Job Type and Job Item
+    $('.select2').select2({
+        placeholder: 'Search and select...',
+        allowClear: true,
+        width: '100%'
+    });
+    
     const sorSelect = document.getElementById('sor_id');
     const custNameInput = document.getElementById('cust_name');
     const productInput = document.getElementById('product');

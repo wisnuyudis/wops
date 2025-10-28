@@ -7,16 +7,16 @@
                         document.write(new Date().getFullYear())
                     </script>,
                     made with <i class="fa fa-heart"></i> by
-                    <a href="javascript:;" class="font-weight-bold" target="_blank">WOPS Team</a>
+                    <a href="javascript:;" class="font-weight-bold" target="_blank">Developer Tampan</a>
                 </div>
             </div>
             <div class="col-lg-6">
                 <ul class="nav nav-footer justify-content-center justify-content-lg-end">
                     <li class="nav-item">
-                        <a href="javascript:;" class="nav-link text-muted" target="_blank">About Us</a>
+                        <a href="javascript:;" class="nav-link text-muted">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a href="javascript:;" class="nav-link text-muted" target="_blank">License</a>
+                        <a href="javascript:;" class="nav-link text-muted">License</a>
                     </li>
                 </ul>
             </div>
