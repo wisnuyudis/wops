@@ -66,13 +66,14 @@
                         
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="product" class="form-control-label">Product</label>
+                                <label for="product" class="form-control-label">Product <small class="text-muted">(Manual entry)</small></label>
                                 <input type="text" class="form-control @error('product') is-invalid @enderror" 
-                                       id="product" name="product" value="{{ old('product') }}" readonly>
+                                       id="product" name="product" value="{{ old('product') }}" 
+                                       placeholder="Enter product name manually">
                                 @error('product')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted">Auto-filled from SOR</small>
+                                <small class="text-muted">Will use SOR product if left blank and SOR is selected</small>
                             </div>
                         </div>
                     </div>
@@ -199,16 +200,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedOption = this.options[this.selectedIndex];
         
         if (this.value) {
-            // Auto-fill customer and product from SOR
+            // Auto-fill customer and product from SOR (only if fields are empty)
             const customer = selectedOption.getAttribute('data-customer');
             const product = selectedOption.getAttribute('data-product');
             
-            custNameInput.value = customer;
-            productInput.value = product;
-        } else {
-            // Clear fields if no SOR selected
-            custNameInput.value = '';
-            productInput.value = '';
+            if (!custNameInput.value) {
+                custNameInput.value = customer;
+            }
+            if (!productInput.value) {
+                productInput.value = product;
+            }
         }
     });
 });
