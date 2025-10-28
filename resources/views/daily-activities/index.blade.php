@@ -189,12 +189,10 @@
                     
                     <div class="form-group mb-3">
                         <label for="export_sor_id" class="form-control-label">Select SOR (Optional)</label>
-                        <select class="form-control" id="export_sor_id" name="sor_id">
-                            <option value="">All SORs</option>
-                            @foreach($sors as $sor)
-                                <option value="{{ $sor->id }}">{{ $sor->sor }} - {{ $sor->customer->cust_name ?? 'N/A' }}</option>
-                            @endforeach
+                        <select class="form-control" id="export_sor_id" name="sor_id" disabled>
+                            <option value="">Select user first...</option>
                         </select>
+                        <small class="form-text text-muted">Please select a user to see their assigned SORs</small>
                     </div>
                     
                     <div class="row">
@@ -249,6 +247,46 @@
             dateFromInput.value = firstDay.toISOString().split('T')[0];
             dateToInput.value = lastDay.toISOString().split('T')[0];
         }
+    });
+    
+    // Load SORs based on selected user
+    document.getElementById('export_user_id').addEventListener('change', function() {
+        const userId = this.value;
+        const sorSelect = document.getElementById('export_sor_id');
+        
+        if (!userId) {
+            sorSelect.disabled = true;
+            sorSelect.innerHTML = '<option value="">Select user first...</option>';
+            return;
+        }
+        
+        // Show loading state
+        sorSelect.disabled = true;
+        sorSelect.innerHTML = '<option value="">Loading SORs...</option>';
+        
+        // Fetch SORs for selected user
+        fetch(`/api/users/${userId}/sors`)
+            .then(response => response.json())
+            .then(data => {
+                sorSelect.disabled = false;
+                sorSelect.innerHTML = '<option value="">All SORs</option>';
+                
+                if (data.sors && data.sors.length > 0) {
+                    data.sors.forEach(sor => {
+                        const option = document.createElement('option');
+                        option.value = sor.id;
+                        option.textContent = `${sor.sor} - ${sor.customer ? sor.customer.cust_name : 'N/A'}`;
+                        sorSelect.appendChild(option);
+                    });
+                } else {
+                    sorSelect.innerHTML = '<option value="">No SORs assigned to this user</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading SORs:', error);
+                sorSelect.disabled = false;
+                sorSelect.innerHTML = '<option value="">Error loading SORs</option>';
+            });
     });
 </script>
 @endpush

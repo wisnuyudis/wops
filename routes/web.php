@@ -75,6 +75,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/export', [DailyActivityController::class, 'export'])->name('daily-activities.export')->middleware('admin');
     });
     
+    // API Routes for AJAX
+    Route::prefix('api')->group(function () {
+        Route::get('/users/{user}/sors', [DailyActivityController::class, 'getUserSors'])->middleware('admin');
+    });
+    
     // Weekly Progress
     Route::prefix('weekly-progress')->group(function () {
         Route::get('/', [WeeklyProgressController::class, 'index'])->name('weekly-progress.index');

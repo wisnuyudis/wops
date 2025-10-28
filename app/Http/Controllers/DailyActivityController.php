@@ -59,10 +59,7 @@ class DailyActivityController extends Controller
                            ->paginate(10)
                            ->appends($request->query());
         
-        // Get SORs for export modal (admin only)
-        $sors = auth()->user()->role === 'admin' ? Sor::with('customer')->orderBy('sor')->get() : collect();
-        
-        return view('daily-activities.index', compact('activities', 'users', 'selectedMonth', 'sors'));
+        return view('daily-activities.index', compact('activities', 'users', 'selectedMonth'));
     }
 
     public function create()
@@ -199,5 +196,15 @@ class DailyActivityController extends Controller
             ),
             $filename
         );
+    }
+    
+    public function getUserSors(User $user)
+    {
+        // Get SORs assigned to the user with customer relationship
+        $sors = $user->sors()->with('customer')->orderBy('sor')->get();
+        
+        return response()->json([
+            'sors' => $sors
+        ]);
     }
 }
