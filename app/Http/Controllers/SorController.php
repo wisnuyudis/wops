@@ -10,7 +10,7 @@ use App\Models\User;
 
 class SorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $query = Sor::with(['customer', 'product', 'users']);
         
@@ -21,7 +21,22 @@ class SorController extends Controller
             });
         }
         
-        $sors = $query->paginate(10);
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('sor', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('product', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $sors = $query->paginate(10)->appends($request->query());
         return view('sors.index', compact('sors'));
     }
 

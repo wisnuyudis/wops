@@ -7,13 +7,23 @@
     <div class="col-12">
         <div class="card mb-4">
             <div class="card-header pb-0">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6>SOR (Statement Of Requirements) List</h6>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">SOR (Statement Of Requirements) List</h6>
                     @if(auth()->user()->role === 'admin')
                     <a href="{{ route('sors.create') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Add New SOR
                     </a>
                     @endif
+                </div>
+                <!-- Search Box -->
+                <div class="px-0 pb-2">
+                    <form action="{{ route('sors.index') }}" method="GET" id="searchForm">
+                        <div class="input-group input-group-sm" style="max-width: 300px;">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control form-control-sm" name="search" 
+                                   placeholder="Search SORs..." value="{{ request('search') }}" id="searchInput">
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
@@ -88,11 +98,22 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-3 mt-3">
-                    {{ $sors->links() }}
-                </div>
+                {{ $sors->links('vendor.pagination.simple') }}
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Realtime search with debounce
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        document.getElementById('searchForm').submit();
+    }, 500);
+});
+</script>
+@endpush

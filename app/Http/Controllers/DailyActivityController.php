@@ -10,7 +10,7 @@ use App\Models\JobItem;
 
 class DailyActivityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $query = DailyActivity::with(['user', 'sor', 'jobType', 'jobItem']);
         
@@ -19,7 +19,21 @@ class DailyActivityController extends Controller
             $query->where('user_id', auth()->id());
         }
         
-        $activities = $query->orderBy('date', 'desc')->paginate(10);
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('action', 'like', "%{$search}%")
+                  ->orWhere('cust_name', 'like', "%{$search}%")
+                  ->orWhere('product', 'like', "%{$search}%")
+                  ->orWhere('objective', 'like', "%{$search}%")
+                  ->orWhereHas('sor', function($q) use ($search) {
+                      $q->where('sor', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $activities = $query->orderBy('date', 'desc')->paginate(10)->appends($request->query());
         return view('daily-activities.index', compact('activities'));
     }
 

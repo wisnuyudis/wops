@@ -7,9 +7,19 @@ use App\Models\Customer;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::paginate(10);
+        $query = Customer::query();
+        
+        // Search functionality
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        $customers = $query->paginate(10)->appends($request->query());
         return view('customers.index', compact('customers'));
     }
 

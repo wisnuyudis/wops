@@ -7,13 +7,23 @@
     <div class="col-12">
         <div class="card mb-4">
             <div class="card-header pb-0">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6>Products List</h6>
                     @if(auth()->user()->role === 'admin')
                     <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Add New Product
                     </a>
                     @endif
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <form method="GET" action="{{ route('products.index') }}" id="searchForm">
+                            <div class="input-group input-group-sm" style="max-width: 300px;">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search products..." value="{{ request('search') }}">
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
@@ -71,10 +81,22 @@
                     </table>
                 </div>
                 <div class="px-3 mt-3">
-                    {{ $products->links() }}
+                    {{ $products->links('vendor.pagination.simple') }}
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            document.getElementById('searchForm').submit();
+        }, 500);
+    });
+</script>
+@endpush

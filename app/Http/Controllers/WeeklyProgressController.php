@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class WeeklyProgressController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $query = WeeklyProgress::with('user');
         
@@ -17,9 +17,25 @@ class WeeklyProgressController extends Controller
             $query->where('user_id', auth()->id());
         }
         
+        // Search functionality
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('year', 'like', "%{$search}%")
+                  ->orWhere('week_number', 'like', "%{$search}%")
+                  ->orWhere('last_week_status', 'like', "%{$search}%")
+                  ->orWhere('p1', 'like', "%{$search}%")
+                  ->orWhere('p2', 'like', "%{$search}%")
+                  ->orWhere('p3', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
         $weeklyProgresses = $query->orderBy('year', 'desc')
                                 ->orderBy('week_number', 'desc')
-                                ->paginate(10);
+                                ->paginate(10)
+                                ->appends($request->query());
         return view('weekly-progress.index', compact('weeklyProgresses'));
     }
 
