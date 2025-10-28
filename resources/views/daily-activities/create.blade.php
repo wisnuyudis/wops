@@ -54,9 +54,15 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="cust_name" class="form-control-label">Customer Name <small class="text-muted">(Manual entry)</small></label>
+                                <label for="cust_name" class="form-control-label">Customer Name <small class="text-muted">(Manual entry with autocomplete)</small></label>
                                 <input type="text" class="form-control @error('cust_name') is-invalid @enderror" 
-                                       id="cust_name" name="cust_name" value="{{ old('cust_name') }}">
+                                       id="cust_name" name="cust_name" value="{{ old('cust_name') }}"
+                                       list="customerList" placeholder="Type or select customer">
+                                <datalist id="customerList">
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->name }}">
+                                    @endforeach
+                                </datalist>
                                 @error('cust_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -66,10 +72,15 @@
                         
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="product" class="form-control-label">Product <small class="text-muted">(Manual entry)</small></label>
+                                <label for="product" class="form-control-label">Product <small class="text-muted">(Manual entry with autocomplete)</small></label>
                                 <input type="text" class="form-control @error('product') is-invalid @enderror" 
                                        id="product" name="product" value="{{ old('product') }}" 
-                                       placeholder="Enter product name manually">
+                                       list="productList" placeholder="Type or select product">
+                                <datalist id="productList">
+                                    @foreach($products as $product)
+                                        <option value="{{ $product->name }}">
+                                    @endforeach
+                                </datalist>
                                 @error('product')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -200,16 +211,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedOption = this.options[this.selectedIndex];
         
         if (this.value) {
-            // Auto-fill customer and product from SOR (only if fields are empty)
+            // Always update customer and product from SOR when SOR changes
             const customer = selectedOption.getAttribute('data-customer');
             const product = selectedOption.getAttribute('data-product');
             
-            if (!custNameInput.value) {
-                custNameInput.value = customer;
-            }
-            if (!productInput.value) {
-                productInput.value = product;
-            }
+            custNameInput.value = customer || '';
+            productInput.value = product || '';
+        } else {
+            // Clear fields if no SOR selected
+            custNameInput.value = '';
+            productInput.value = '';
         }
     });
 });

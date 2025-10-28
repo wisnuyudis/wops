@@ -7,6 +7,8 @@ use App\Models\DailyActivity;
 use App\Models\Sor;
 use App\Models\JobType;
 use App\Models\JobItem;
+use App\Models\Customer;
+use App\Models\Product;
 
 class DailyActivityController extends Controller
 {
@@ -48,7 +50,10 @@ class DailyActivityController extends Controller
         
         $jobTypes = JobType::all();
         $jobItems = JobItem::all();
-        return view('daily-activities.create', compact('sors', 'jobTypes', 'jobItems'));
+        $customers = Customer::orderBy('name')->get();
+        $products = Product::orderBy('name')->get();
+        
+        return view('daily-activities.create', compact('sors', 'jobTypes', 'jobItems', 'customers', 'products'));
     }
 
     public function store(Request $request)
@@ -96,7 +101,10 @@ class DailyActivityController extends Controller
         
         $jobTypes = JobType::all();
         $jobItems = JobItem::all();
-        return view('daily-activities.edit', compact('dailyActivity', 'sors', 'jobTypes', 'jobItems'));
+        $customers = Customer::orderBy('name')->get();
+        $products = Product::orderBy('name')->get();
+        
+        return view('daily-activities.edit', compact('dailyActivity', 'sors', 'jobTypes', 'jobItems', 'customers', 'products'));
     }
 
     public function update(Request $request, DailyActivity $dailyActivity)
