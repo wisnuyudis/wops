@@ -27,7 +27,6 @@ class DailyActivityController extends Controller
               ->whereMonth('date', $date->month);
         
         // Get users list for admin filter
-        $users = null;
         if (auth()->user()->role === 'admin') {
             $users = User::orderBy('name')->get();
             
@@ -37,6 +36,7 @@ class DailyActivityController extends Controller
             }
         } else {
             // If user is not admin, only show their own activities
+            $users = collect(); // Empty collection for non-admin
             $query->where('user_id', auth()->id());
         }
         
