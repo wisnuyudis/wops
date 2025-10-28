@@ -13,12 +13,27 @@
                         <i class="fas fa-plus"></i> Add New Activity
                     </a>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <form method="GET" action="{{ route('daily-activities.index') }}" id="monthForm">
+                            <label class="form-label text-xs mb-1">Period</label>
+                            <input type="month" name="month" class="form-control form-control-sm" 
+                                   value="{{ $selectedMonth }}" onchange="this.form.submit()">
+                            @if(request('search'))
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
+                            @if(auth()->user()->role === 'admin' && request('user_id'))
+                                <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                            @endif
+                        </form>
+                    </div>
+                    <div class="col-md-3">
                         <form method="GET" action="{{ route('daily-activities.index') }}" id="searchForm">
-                            <div class="input-group input-group-sm" style="max-width: 300px;">
+                            <label class="form-label text-xs mb-1">Search</label>
+                            <div class="input-group input-group-sm">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search activities..." value="{{ request('search') }}">
+                                <input type="hidden" name="month" value="{{ $selectedMonth }}">
                                 @if(auth()->user()->role === 'admin' && request('user_id'))
                                     <input type="hidden" name="user_id" value="{{ request('user_id') }}">
                                 @endif
@@ -26,9 +41,10 @@
                         </form>
                     </div>
                     @if(auth()->user()->role === 'admin')
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <form method="GET" action="{{ route('daily-activities.index') }}" id="filterForm">
-                            <div class="input-group input-group-sm" style="max-width: 300px; margin-left: auto;">
+                            <label class="form-label text-xs mb-1">Filter by User</label>
+                            <div class="input-group input-group-sm">
                                 <span class="input-group-text"><i class="fas fa-user"></i></span>
                                 <select name="user_id" class="form-control" id="userFilter" onchange="this.form.submit()">
                                     <option value="">All Users</option>
@@ -38,6 +54,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <input type="hidden" name="month" value="{{ $selectedMonth }}">
                                 @if(request('search'))
                                     <input type="hidden" name="search" value="{{ request('search') }}">
                                 @endif

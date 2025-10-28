@@ -10,12 +10,21 @@ use App\Models\JobItem;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\User;
+use Carbon\Carbon;
 
 class DailyActivityController extends Controller
 {
     public function index(Request $request)
     {
         $query = DailyActivity::with(['user', 'sor', 'jobType', 'jobItem']);
+        
+        // Get selected month (default to current month)
+        $selectedMonth = $request->input('month', now()->format('Y-m'));
+        $date = Carbon::parse($selectedMonth . '-01');
+        
+        // Filter by selected month
+        $query->whereYear('date', $date->year)
+              ->whereMonth('date', $date->month);
         
         // Get users list for admin filter
         $users = null;
@@ -49,7 +58,7 @@ class DailyActivityController extends Controller
                            ->orderBy('id', 'desc')
                            ->paginate(10)
                            ->appends($request->query());
-        return view('daily-activities.index', compact('activities', 'users'));
+        return view('daily-activities.index', compact('activities', 'users', 'selectedMonth'));
     }
 
     public function create()
