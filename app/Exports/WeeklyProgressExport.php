@@ -3,15 +3,14 @@
 namespace App\Exports;
 
 use App\Models\WeeklyProgress;
+use App\Models\User;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use Carbon\Carbon;
 
 class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidths
 {
@@ -30,83 +29,71 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
     {
         $data = collect();
         
+        // Get all users
+        $allUsers = User::orderBy('name')->get();
+        
         // Loop through each week in the range
         for ($week = $this->weekFrom; $week <= $this->weekTo; $week++) {
             // Calculate week date range
             $dateRange = $this->getWeekDateRange($this->year, $week);
             
-            // Add week header row with merged cells info
+            // Add week header row (will be merged in styles)
             $data->push([
-                'week_header' => true,
-                'week' => $week,
-                'year' => $this->year,
-                'date_range' => $dateRange,
-                'name' => "Week {$week} ({$dateRange})",
-                'last_week_status' => '',
-                'p1' => '',
-                'p2' => '',
-                'p3' => ''
+                "Week {$week} ({$dateRange})",
+                '',
+                '',
+                '',
+                ''
             ]);
             
             // Add column headers
             $data->push([
-                'week_header' => false,
-                'column_header' => true,
-                'name' => 'Name',
-                'last_week_status' => 'Last Week Status',
-                'p1' => 'P1',
-                'p2' => 'P2',
-                'p3' => 'P3'
+                'Name',
+                'Last Week Status',
+                'P1',
+                'P2',
+                'P3'
             ]);
             
-            // Get weekly progress for this week
-            $weeklyProgresses = WeeklyProgress::with('user')
-                ->where('year', $this->year)
+            // Get weekly progress for this week, indexed by user_id
+            $weeklyProgressByUser = WeeklyProgress::where('year', $this->year)
                 ->where('week_number', $week)
-                ->orderBy('user_id')
-                ->get();
+                ->get()
+                ->keyBy('user_id');
             
-            if ($weeklyProgresses->isEmpty()) {
-                // Add "No data" row if no progress for this week
+            // Add data rows for ALL users
+            foreach ($allUsers as $user) {
+                $progress = $weeklyProgressByUser->get($user->id);
+                
                 $data->push([
-                    'week_header' => false,
-                    'column_header' => false,
-                    'name' => 'No data available for this week',
-                    'last_week_status' => '-',
-                    'p1' => '-',
-                    'p2' => '-',
-                    'p3' => '-'
+                    $user->name,
+                    $this->formatTextWithLineBreaks($progress ? ($progress->last_week_status ?? '-') : '-'),
+                    $this->formatTextWithLineBreaks($progress ? ($progress->p1 ?? '-') : '-'),
+                    $this->formatTextWithLineBreaks($progress ? ($progress->p2 ?? '-') : '-'),
+                    $this->formatTextWithLineBreaks($progress ? ($progress->p3 ?? '-') : '-')
                 ]);
-            } else {
-                // Add data rows
-                foreach ($weeklyProgresses as $progress) {
-                    $data->push([
-                        'week_header' => false,
-                        'column_header' => false,
-                        'name' => $progress->user->name ?? 'Unknown',
-                        'last_week_status' => $progress->last_week_status ?? '-',
-                        'p1' => $progress->p1 ?? '-',
-                        'p2' => $progress->p2 ?? '-',
-                        'p3' => $progress->p3 ?? '-'
-                    ]);
-                }
             }
             
             // Add empty row as separator between weeks (except for last week)
             if ($week < $this->weekTo) {
-                $data->push([
-                    'week_header' => false,
-                    'separator' => true,
-                    'name' => '',
-                    'last_week_status' => '',
-                    'p1' => '',
-                    'p2' => '',
-                    'p3' => ''
-                ]);
+                $data->push(['', '', '', '', '']);
             }
         }
         
         return $data;
+    }
+
+    private function formatTextWithLineBreaks($text)
+    {
+        if ($text === '-' || empty($text)) {
+            return $text;
+        }
+        
+        // Convert common newline characters to Excel line break (LF only)
+        // Handle \r\n (Windows), \r (Mac), and \n (Unix)
+        $text = str_replace(["\r\n", "\r"], "\n", $text);
+        
+        return $text;
     }
 
     private function getWeekDateRange($year, $weekNumber)
@@ -135,7 +122,6 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
     public function styles(Worksheet $sheet)
     {
         $highestRow = $sheet->getHighestRow();
-        $currentRow = 1;
         
         // Loop through all rows to apply conditional styling
         for ($row = 1; $row <= $highestRow; $row++) {
@@ -189,7 +175,7 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
                 ]);
                 $sheet->getRowDimension($row)->setRowHeight(20);
             }
-            // Regular data rows
+            // Regular data rows (not empty and not headers)
             elseif (!empty($cellValue) && $cellValue !== '') {
                 // Style data rows
                 $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
@@ -205,8 +191,23 @@ class WeeklyProgressExport implements FromCollection, WithStyles, WithColumnWidt
                     ],
                 ]);
                 
-                // Center align Name column
+                // Left align Name column
                 $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                
+                // Calculate row height based on content with line breaks
+                $maxLines = 1;
+                for ($col = 'A'; $col <= 'E'; $col++) {
+                    $cellContent = $sheet->getCell("{$col}{$row}")->getValue();
+                    if (!empty($cellContent) && $cellContent !== '-') {
+                        $lineCount = substr_count($cellContent, "\n") + 1;
+                        $maxLines = max($maxLines, $lineCount);
+                    }
+                }
+                
+                // Set row height: 15 pixels per line + 5 pixels padding
+                if ($maxLines > 1) {
+                    $sheet->getRowDimension($row)->setRowHeight($maxLines * 15 + 5);
+                }
             }
         }
         
