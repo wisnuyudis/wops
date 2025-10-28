@@ -45,7 +45,16 @@
                 <p class="text-sm mb-0">Distribution of activities per customer</p>
             </div>
             <div class="card-body">
-                <canvas id="customerChart" height="300"></canvas>
+                @if($activityByCustomers->count() > 0)
+                    <canvas id="customerChart" height="300"></canvas>
+                @else
+                    <div class="d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <div class="text-center">
+                            <i class="fas fa-chart-pie fa-3x text-secondary mb-3"></i>
+                            <p class="text-muted mb-0">No data available</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -58,7 +67,16 @@
                 <p class="text-sm mb-0">Number of activities per product</p>
             </div>
             <div class="card-body">
-                <canvas id="productChart" height="300"></canvas>
+                @if($activityByProducts->count() > 0)
+                    <canvas id="productChart" height="300"></canvas>
+                @else
+                    <div class="d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <div class="text-center">
+                            <i class="fas fa-chart-bar fa-3x text-secondary mb-3"></i>
+                            <p class="text-muted mb-0">No data available</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -71,7 +89,16 @@
                 <p class="text-sm mb-0">Distribution of activities per job item</p>
             </div>
             <div class="card-body">
-                <canvas id="jobItemChart" height="300"></canvas>
+                @if($activityByJobItems->count() > 0)
+                    <canvas id="jobItemChart" height="300"></canvas>
+                @else
+                    <div class="d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <div class="text-center">
+                            <i class="fas fa-chart-pie fa-3x text-secondary mb-3"></i>
+                            <p class="text-muted mb-0">No data available</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -85,6 +112,7 @@
 // Register datalabels plugin
 Chart.register(ChartDataLabels);
 
+@if($activityByCustomers->count() > 0)
 // Pie Chart - Customers
 const customerData = {
     labels: {!! json_encode($activityByCustomers->pluck('cust_name')) !!},
@@ -112,17 +140,31 @@ const customerChart = new Chart(document.getElementById('customerChart'), {
                 }
             },
             datalabels: {
-                color: '#fff',
+                color: '#444',
                 font: {
                     weight: 'bold',
-                    size: 12
+                    size: 11
                 },
-                formatter: (value) => value
+                formatter: (value, ctx) => {
+                    return value;
+                },
+                anchor: 'end',
+                align: 'end',
+                offset: 10,
+                borderWidth: 2,
+                borderColor: '#fff',
+                borderRadius: 4,
+                backgroundColor: (context) => {
+                    return context.dataset.backgroundColor;
+                },
+                padding: 4
             }
         }
     }
 });
+@endif
 
+@if($activityByProducts->count() > 0)
 // Bar Chart - Products
 const productData = {
     labels: {!! json_encode($activityByProducts->pluck('product')) !!},
@@ -160,7 +202,9 @@ const productChart = new Chart(document.getElementById('productChart'), {
         }
     }
 });
+@endif
 
+@if($activityByJobItems->count() > 0)
 // Pie Chart - Job Items
 const jobItemData = {
     labels: {!! json_encode($activityByJobItems->pluck('name')) !!},
@@ -188,15 +232,28 @@ const jobItemChart = new Chart(document.getElementById('jobItemChart'), {
                 }
             },
             datalabels: {
-                color: '#fff',
+                color: '#444',
                 font: {
                     weight: 'bold',
-                    size: 12
+                    size: 11
                 },
-                formatter: (value) => value
+                formatter: (value, ctx) => {
+                    return value;
+                },
+                anchor: 'end',
+                align: 'end',
+                offset: 10,
+                borderWidth: 2,
+                borderColor: '#fff',
+                borderRadius: 4,
+                backgroundColor: (context) => {
+                    return context.dataset.backgroundColor;
+                },
+                padding: 4
             }
         }
     }
 });
+@endif
 </script>
 @endpush

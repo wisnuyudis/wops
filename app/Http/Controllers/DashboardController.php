@@ -40,27 +40,25 @@ class DashboardController extends Controller
         
         // Get Daily Activity by Customers (for Pie Chart)
         $activityByCustomers = (clone $query)
-            ->select('cust_name', DB::raw('count(*) as total'))
-            ->whereNotNull('cust_name')
-            ->groupBy('cust_name')
+            ->select(DB::raw('ISNULL(cust_name, \'Uncategorized\') as cust_name'), DB::raw('count(*) as total'))
+            ->groupBy(DB::raw('ISNULL(cust_name, \'Uncategorized\')'))
             ->orderBy('total', 'desc')
             ->limit(10)
             ->get();
         
         // Get Daily Activity by Product (for Bar Chart)
         $activityByProducts = (clone $query)
-            ->select('product', DB::raw('count(*) as total'))
-            ->whereNotNull('product')
-            ->groupBy('product')
+            ->select(DB::raw('ISNULL(product, \'Uncategorized\') as product'), DB::raw('count(*) as total'))
+            ->groupBy(DB::raw('ISNULL(product, \'Uncategorized\')'))
             ->orderBy('total', 'desc')
             ->limit(10)
             ->get();
         
         // Get Daily Activity by Job Items (for Pie Chart)
         $activityByJobItems = (clone $query)
-            ->join('job_items', 'daily_activities.job_item_id', '=', 'job_items.id')
-            ->select('job_items.name', DB::raw('count(*) as total'))
-            ->groupBy('job_items.name')
+            ->leftJoin('job_items', 'daily_activities.job_item_id', '=', 'job_items.id')
+            ->select(DB::raw('ISNULL(job_items.name, \'Uncategorized\') as name'), DB::raw('count(*) as total'))
+            ->groupBy(DB::raw('ISNULL(job_items.name, \'Uncategorized\')'))
             ->orderBy('total', 'desc')
             ->limit(10)
             ->get();
