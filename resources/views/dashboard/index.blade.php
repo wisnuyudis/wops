@@ -3,146 +3,180 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div class="row">
-    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+<!-- Filter Section -->
+<div class="row mb-4">
+    <div class="col-12">
         <div class="card">
             <div class="card-body p-3">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Users</p>
-                            <h5 class="font-weight-bolder">
-                                {{ $totalUsers }}
-                            </h5>
+                <form method="GET" action="{{ route('dashboard') }}" id="filterForm">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label text-xs mb-1">Select Period</label>
+                            <input type="month" name="month" class="form-control form-control-sm" 
+                                   value="{{ $selectedMonth }}" onchange="this.form.submit()">
                         </div>
-                    </div>
-                    <div class="col-4 text-end">
-                        <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
-                            <i class="ni ni-single-02 text-lg opacity-10" aria-hidden="true"></i>
+                        @if(auth()->user()->role === 'admin')
+                        <div class="col-md-4">
+                            <label class="form-label text-xs mb-1">Select User</label>
+                            <select name="user_id" class="form-control form-control-sm" onchange="this.form.submit()">
+                                <option value="">All Users</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ $selectedUserId == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
+                        @endif
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <div class="card">
-            <div class="card-body p-3">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Total SORs</p>
-                            <h5 class="font-weight-bolder">
-                                {{ $totalSors }}
-                            </h5>
-                        </div>
-                    </div>
-                    <div class="col-4 text-end">
-                        <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
-                            <i class="ni ni-single-copy-04 text-lg opacity-10" aria-hidden="true"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-        <div class="card">
-            <div class="card-body p-3">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Daily Activities</p>
-                            <h5 class="font-weight-bolder">
-                                {{ $totalActivities }}
-                            </h5>
-                        </div>
-                    </div>
-                    <div class="col-4 text-end">
-                        <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-                            <i class="ni ni-calendar-grid-58 text-lg opacity-10" aria-hidden="true"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6">
-        <div class="card">
-            <div class="card-body p-3">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="numbers">
-                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Weekly Progress</p>
-                            <h5 class="font-weight-bolder">
-                                {{ $totalWeeklyProgress }}
-                            </h5>
-                        </div>
-                    </div>
-                    <div class="col-4 text-end">
-                        <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
-                            <i class="ni ni-collection text-lg opacity-10" aria-hidden="true"></i>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-lg-12 mb-lg-0 mb-4">
-        <div class="card ">
-            <div class="card-header pb-0 p-3">
-                <div class="d-flex justify-content-between">
-                    <h6 class="mb-2">Recent Activities</h6>
-                </div>
+<!-- Charts Section -->
+<div class="row">
+    <!-- Pie Chart - Activity by Customers -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <h6>Daily Activity by Customers</h6>
+                <p class="text-sm mb-0">Distribution of activities per customer</p>
             </div>
-            <div class="table-responsive">
-                <table class="table align-items-center ">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Customer</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Product</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentActivities as $activity)
-                        <tr>
-                            <td>
-                                <div class="d-flex px-2 py-1">
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="mb-0 text-xs">{{ $activity->user->name }}</h6>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">{{ $activity->date->format('d M Y') }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">{{ $activity->cust_name ?? ($activity->sor ? $activity->sor->customer->name : '-') }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">{{ $activity->product ?? '-' }}</p>
-                            </td>
-                            <td>
-                                <span class="badge badge-sm badge-{{ $activity->status == 'completed' ? 'success' : ($activity->status == 'in_progress' ? 'info' : 'warning') }}">
-                                    {{ ucfirst($activity->status) }}
-                                </span>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center">No recent activities</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <canvas id="customerChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bar Chart - Activity by Product -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <h6>Daily Activity by Product</h6>
+                <p class="text-sm mb-0">Number of activities per product</p>
+            </div>
+            <div class="card-body">
+                <canvas id="productChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Line Chart - Activity by Job Items -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <h6>Daily Activity by Job Items</h6>
+                <p class="text-sm mb-0">Activity trend throughout the month</p>
+            </div>
+            <div class="card-body">
+                <canvas id="jobItemChart" height="300"></canvas>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// Pie Chart - Customers
+const customerData = {
+    labels: {!! json_encode($activityByCustomers->pluck('cust_name')) !!},
+    datasets: [{
+        data: {!! json_encode($activityByCustomers->pluck('total')) !!},
+        backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
+        ]
+    }]
+};
+
+const customerChart = new Chart(document.getElementById('customerChart'), {
+    type: 'pie',
+    data: customerData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 12,
+                    font: { size: 10 }
+                }
+            }
+        }
+    }
+});
+
+// Bar Chart - Products
+const productData = {
+    labels: {!! json_encode($activityByProducts->pluck('product')) !!},
+    datasets: [{
+        label: 'Activities',
+        data: {!! json_encode($activityByProducts->pluck('total')) !!},
+        backgroundColor: '#36A2EB'
+    }]
+};
+
+const productChart = new Chart(document.getElementById('productChart'), {
+    type: 'bar',
+    data: productData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        },
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
+
+// Line Chart - Job Items
+const jobItemsData = {!! json_encode($jobItemsData) !!};
+const days = {!! json_encode($days) !!};
+
+const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+const datasets = Object.keys(jobItemsData).map((jobItem, index) => ({
+    label: jobItem,
+    data: jobItemsData[jobItem],
+    borderColor: colors[index % colors.length],
+    backgroundColor: colors[index % colors.length] + '20',
+    tension: 0.3
+}));
+
+const jobItemChart = new Chart(document.getElementById('jobItemChart'), {
+    type: 'line',
+    data: {
+        labels: days,
+        datasets: datasets
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 12,
+                    font: { size: 10 }
+                }
+            }
+        }
+    }
+});
+</script>
+@endpush
