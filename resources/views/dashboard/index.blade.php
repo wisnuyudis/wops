@@ -46,7 +46,7 @@
             </div>
             <div class="card-body">
                 @if($activityByCustomers->count() > 0)
-                    <canvas id="customerChart" height="300"></canvas>
+                    <canvas id="customerChart" height="350"></canvas>
                 @else
                     <div class="d-flex align-items-center justify-content-center" style="height: 300px;">
                         <div class="text-center">
@@ -90,7 +90,7 @@
             </div>
             <div class="card-body">
                 @if($activityByJobItems->count() > 0)
-                    <canvas id="jobItemChart" height="300"></canvas>
+                    <canvas id="jobItemChart" height="350"></canvas>
                 @else
                     <div class="d-flex align-items-center justify-content-center" style="height: 300px;">
                         <div class="text-center">
@@ -131,33 +131,33 @@ const customerChart = new Chart(document.getElementById('customerChart'), {
     options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+            padding: 20
+        },
         plugins: {
             legend: {
                 position: 'bottom',
                 labels: {
                     boxWidth: 12,
-                    font: { size: 10 }
+                    font: { size: 10 },
+                    padding: 10
                 }
             },
             datalabels: {
-                color: '#444',
+                color: '#000',
                 font: {
                     weight: 'bold',
-                    size: 11
+                    size: 12
                 },
                 formatter: (value, ctx) => {
                     return value;
                 },
                 anchor: 'end',
                 align: 'end',
-                offset: 10,
-                borderWidth: 2,
-                borderColor: '#fff',
-                borderRadius: 4,
-                backgroundColor: (context) => {
-                    return context.dataset.backgroundColor;
-                },
-                padding: 4
+                offset: 4,
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                padding: 0
             }
         }
     }
@@ -223,33 +223,33 @@ const jobItemChart = new Chart(document.getElementById('jobItemChart'), {
     options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+            padding: 20
+        },
         plugins: {
             legend: {
                 position: 'bottom',
                 labels: {
                     boxWidth: 12,
-                    font: { size: 10 }
+                    font: { size: 10 },
+                    padding: 10
                 }
             },
             datalabels: {
-                color: '#444',
+                color: '#000',
                 font: {
                     weight: 'bold',
-                    size: 11
+                    size: 12
                 },
                 formatter: (value, ctx) => {
                     return value;
                 },
                 anchor: 'end',
                 align: 'end',
-                offset: 10,
-                borderWidth: 2,
-                borderColor: '#fff',
-                borderRadius: 4,
-                backgroundColor: (context) => {
-                    return context.dataset.backgroundColor;
-                },
-                padding: 4
+                offset: 4,
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                padding: 0
             }
         }
     }
