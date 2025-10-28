@@ -9,9 +9,16 @@
             <div class="card-header pb-0">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6>Weekly Progress List</h6>
-                    <a href="{{ route('weekly-progress.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus"></i> Add New
-                    </a>
+                    <div>
+                        @if(auth()->user()->role === 'admin')
+                        <button type="button" class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#exportModal">
+                            <i class="fas fa-file-excel"></i> Export to Excel
+                        </button>
+                        @endif
+                        <a href="{{ route('weekly-progress.create') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add New
+                        </a>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -114,6 +121,53 @@
         </div>
     </div>
 </div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Weekly Progress to Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('weekly-progress.export') }}" id="exportForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="week_from" class="form-control-label">Week From <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="week_from" name="week_from" 
+                                       min="1" max="53" placeholder="e.g., 43" required>
+                                <small class="form-text text-muted">Week number (1-53)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="week_to" class="form-control-label">Week To <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="week_to" name="week_to" 
+                                       min="1" max="53" placeholder="e.g., 44" required>
+                                <small class="form-text text-muted">Week number (1-53)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="year" class="form-control-label">Year <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="year" name="year" 
+                               min="2020" max="2030" value="{{ date('Y') }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')

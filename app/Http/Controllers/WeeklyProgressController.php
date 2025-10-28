@@ -132,4 +132,25 @@ class WeeklyProgressController extends Controller
         $weeklyProgress->delete();
         return redirect()->route('weekly-progress.index')->with('success', 'Weekly Progress deleted successfully.');
     }
+
+    public function export(Request $request)
+    {
+        $validated = $request->validate([
+            'week_from' => 'required|integer|min:1|max:53',
+            'week_to' => 'required|integer|min:1|max:53|gte:week_from',
+            'year' => 'required|integer|min:2020|max:2030',
+        ]);
+
+        $weekFrom = $validated['week_from'];
+        $weekTo = $validated['week_to'];
+        $year = $validated['year'];
+        
+        // Generate filename
+        $filename = "WeeklyProgress_Week{$weekFrom}-Week{$weekTo}_{$year}.xlsx";
+        
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\WeeklyProgressExport($weekFrom, $weekTo, $year),
+            $filename
+        );
+    }
 }

@@ -89,5 +89,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{weeklyProgress}/edit', [WeeklyProgressController::class, 'edit'])->name('weekly-progress.edit');
         Route::put('/{weeklyProgress}', [WeeklyProgressController::class, 'update'])->name('weekly-progress.update');
         Route::delete('/{weeklyProgress}', [WeeklyProgressController::class, 'destroy'])->name('weekly-progress.destroy');
+        
+        // Export (Admin only)
+        Route::post('/export', [WeeklyProgressController::class, 'export'])->name('weekly-progress.export')->middleware('admin');
     });
 });
